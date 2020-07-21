@@ -1,7 +1,7 @@
 Package: bactcountr
 Type: Package
-Title: Back calculate CFU's based on dilution series
-Version: 0.1.0
+Title: Back Calculate CFU's Based On Dilution Series
+Version: 0.0.0.9000
 Author: Amy Fox
 Maintainer: The package maintainer <amyfox@colostate.edu>
 Description: Calculating and plotting CFUs is traditionally done by hand or in excel. This package 
@@ -17,3 +17,7 @@ Imports:
     stats,
     purrr,
     magrittr
+Suggests: 
+    testthat
+Depends: 
+    R (>= 2.10)
