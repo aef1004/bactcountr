@@ -17,9 +17,6 @@ A data frame with 46 rows and 7 variables:
   ...
 }
 }
-\source{
-
-}
 \usage{
 CFU_excel_raw
 }

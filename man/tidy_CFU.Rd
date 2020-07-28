@@ -12,13 +12,12 @@ tidy_CFU(df, CFU_column)
 \item{CFU_column}{?? not sure why I need this part actually...}
 }
 \value{
-
+df
 }
 \description{
 Clean CFU data and selects all columns that start with dilution
 }
 \examples{
 tidy_CFU(CFU_excel_raw, "CFUs")
-
 
 }

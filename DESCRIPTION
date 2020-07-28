@@ -6,7 +6,7 @@ Author: Amy Fox
 Maintainer: The package maintainer <amyfox@colostate.edu>
 Description: Calculating and plotting CFUs is traditionally done by hand or in excel. This package 
     provides an automated way to calculate CFUs based on the dilutions used and to plot the final results.
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
@@ -16,7 +16,8 @@ Imports:
     stringr,
     stats,
     purrr,
-    magrittr
+    magrittr,
+    rlang
 Suggests: 
     testthat
 Depends: 

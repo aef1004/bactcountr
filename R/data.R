@@ -14,5 +14,4 @@
 #'   \item{dilution_3}{number of CFUs present for dilution 3}
 #'   ...
 #' }
-#' @source
 "CFU_excel_raw"
