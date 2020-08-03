@@ -37,3 +37,10 @@ library(bactcountr)
 ## basic example code
 ```
 
+
+```{r}
+CFU_raw_formatted <- tidy_CFU(CFU_excel_raw, "CFUs")
+
+pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "mouse"))
+```
+
