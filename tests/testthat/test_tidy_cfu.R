@@ -1,6 +1,6 @@
 context("cfu dataframe format")
 
-test_that("The format of the cfu dataframe is usable", {
+test_that("The format of the cfu dataframe is unusable", {
 
   data <- CFU_excel_raw
 
