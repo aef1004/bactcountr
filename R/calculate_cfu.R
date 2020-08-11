@@ -15,6 +15,7 @@
 #'
 calculate_cfu <- function(df, dilution_factor, resuspend_volume_mL, percent = 1, dilution_column = "dilution", CFU_column = "CFUs") {
 
+  stopifnot(percent <1)
   CFU_column = as.name(CFU_column)
   dilution_column = as.name(dilution_column)
   calculated_CFU <- whole_CFUs <- log_CFUs <- NULL
