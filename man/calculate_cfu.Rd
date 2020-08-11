@@ -7,7 +7,7 @@
 calculate_cfu(
   df,
   dilution_factor,
-  resuspend_volume_mL,
+  resuspend_volume_ml,
   percent = 1,
   dilution_column = "dilution",
   CFU_column = "CFUs"
@@ -18,7 +18,7 @@ calculate_cfu(
 
 \item{dilution_factor}{the dilution factor used to perform dilutions (e.g., 5 fold dilutions)}
 
-\item{resuspend_volume_mL}{the volume that the organ is resuspended in mL (e.g., 0.5 mL)}
+\item{resuspend_volume_ml}{the volume that the organ is resuspended in mL (e.g., 0.5 mL)}
 
 \item{percent}{percentage of the organ used to plate as a fraction/decimal, default is 1 (whole organ)}
 

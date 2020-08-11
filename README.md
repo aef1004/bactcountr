@@ -111,7 +111,7 @@ is used, default is 1 so whole
 organ).
 
 ``` r
-final_data <- calculate_cfu(CFU_one_dilution, dilution_factor = 5, resuspend_volume_mL = 0.5, percent = 0.5, "dilution", "CFUs")
+final_data <- calculate_cfu(CFU_one_dilution, dilution_factor = 5, resuspend_volume_ml = 0.5, percent = 0.5, "dilution", "CFUs")
 
 head(final_data)
 #> # A tibble: 6 x 8
@@ -150,3 +150,25 @@ ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+
+## Alternative use without using pick\_one\_dilution
+
+If you want to see the consistancy of the plating across the dilutions,
+you can skip the `pick_one_dilution` function and plot the calculated
+log\_CFUs for group/mouse against the dilutions.
+
+``` r
+analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
+  tidy_CFU() %>%
+  filter(organ == "Spleen") %>%
+  calculate_cfu(5, 0.5, .5, "dilution", "CFUs") %>%
+  unite(col = group_mouse, group, mouse, sep = "_")
+#> Warning: NAs introduced by coercion
+
+ggplot(analyzed_CFUs_wo_pick_one, aes(dilution, log_CFUs, color = group_mouse)) +
+  geom_point() +
+  geom_path() +
+  ggtitle("PL BCG CFUs D-21 Spleen for all dilutions")
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />

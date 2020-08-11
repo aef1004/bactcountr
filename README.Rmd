@@ -70,7 +70,7 @@ head(CFU_one_dilution)
 
 The `calculate_cfu` function calculates the whole CFUs and log CFUs for each observation in the data. It takes in experimental parameters such as the dilution factor used, the volume (in milliliters) used to resuspend the CFU solution, and the percent of the organ used (if organ is used, default is 1 so whole organ).
 ```{r}
-final_data <- calculate_cfu(CFU_one_dilution, dilution_factor = 5, resuspend_volume_mL = 0.5, percent = 0.5, "dilution", "CFUs")
+final_data <- calculate_cfu(CFU_one_dilution, dilution_factor = 5, resuspend_volume_ml = 0.5, percent = 0.5, "dilution", "CFUs")
 
 head(final_data)
 ```
@@ -95,6 +95,23 @@ analyzed_CFUs <- read_xlsx(example_file_address) %>%
 ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
   geom_beeswarm(groupOnX = TRUE) +
   ggtitle("PL BCG CFUs D-21 Spleen")
+
+```
+
+## Alternative use without using pick_one_dilution
+
+If you want to see the consistancy of the plating across the dilutions, you can skip the `pick_one_dilution` function and plot the calculated log_CFUs for group/mouse against the dilutions.
+```{r}
+analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
+  tidy_CFU() %>%
+  filter(organ == "Spleen") %>%
+  calculate_cfu(5, 0.5, .5, "dilution", "CFUs") %>%
+  unite(col = group_mouse, group, mouse, sep = "_")
+
+ggplot(analyzed_CFUs_wo_pick_one, aes(dilution, log_CFUs, color = group_mouse)) +
+  geom_point() +
+  geom_path() +
+  ggtitle("PL BCG CFUs D-21 Spleen for all dilutions")
 
 ```
 
