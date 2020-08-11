@@ -4,12 +4,10 @@
 \alias{tidy_CFU}
 \title{Clean CFU data and selects all columns that start with dilution}
 \usage{
-tidy_CFU(df, CFU_column)
+tidy_CFU(df)
 }
 \arguments{
 \item{df}{dataframe that contains all of the raw CFU data with the dilutions}
-
-\item{CFU_column}{?? not sure why I need this part actually...}
 }
 \value{
 df
@@ -18,6 +16,6 @@ df
 Clean CFU data and selects all columns that start with dilution
 }
 \examples{
-tidy_CFU(CFU_excel_raw, "CFUs")
+tidy_CFU(CFU_data)
 
 }
