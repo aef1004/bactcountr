@@ -14,7 +14,7 @@
 #'   \item{dilution_3}{number of CFUs present for dilution 3}
 #'   ...
 #' }
-"CFU_data"
+"CFU_data "
 
 
 #' CFU data formatted after using tidy_cfu

@@ -77,7 +77,7 @@ This is an example reading in the data from an excel file. The functions are all
 
 ```{r warning = FALSE}
 # example file for the excel file
-example_file_address <- system.file("extdata", "PL_D-21_CFUs.xlsx", package = "bactcountr")
+example_file_address <- system.file("extdata", "PL_D-21_BCG_CFUs.xlsx", package = "bactcountr")
 
 # all of the functions are used to tidy the data, pick one dilution, and then calculate the log CFUs
 analyzed_CFUs <- read_xlsx(example_file_address) %>%

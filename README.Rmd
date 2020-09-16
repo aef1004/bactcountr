@@ -40,6 +40,9 @@ library(tidyr)
 library(ggplot2)
 library(ggbeeswarm)
 library(readxl)
+library(purrr)
+library(rstatix)
+library(ggpubr)
 
 ```
 
@@ -70,7 +73,10 @@ head(CFU_one_dilution)
 
 The `calculate_cfu` function calculates the whole CFUs and log CFUs for each observation in the data. It takes in experimental parameters such as the dilution factor used, the volume (in milliliters) used to resuspend the CFU solution, and the percent of the organ used (if organ is used, default is 1 so whole organ).
 ```{r}
-final_data <- calculate_cfu(CFU_one_dilution, dilution_factor = 5, resuspend_volume_ml = 0.5, percent = 0.5, "dilution", "CFUs")
+final_data <- calculate_cfu(CFU_one_dilution, 
+                            dilution_factor = 5, 
+                            resuspend_volume_ml = 0.5, 
+                            percent = 0.5, "dilution", "CFUs")
 
 head(final_data)
 ```
@@ -82,14 +88,16 @@ This is an example reading in the data from an excel file. The functions are all
 
 ```{r warning = FALSE}
 # example file for the excel file
-example_file_address <- system.file("extdata", "PL_D-21_CFUs.xlsx", package = "bactcountr")
+example_file_address <- system.file("extdata", "PL_D-21_BCG_CFUs.xlsx", package = "bactcountr")
 
 # all of the functions are used to tidy the data, pick one dilution, and then calculate the log CFUs
 analyzed_CFUs <- read_xlsx(example_file_address) %>%
   tidy_CFU() %>%
   pick_one_dilution("CFUs", c("group", "organ", "mouse")) %>%
   filter(organ == "Spleen") %>%
-  calculate_cfu(5, 0.5, .5, "dilution", "CFUs")
+  calculate_cfu(dilution_factor = 5,
+                resuspend_volume_ml = 0.5,
+                percent = .5, "dilution", "CFUs")
 
 # the CFUs can then be plotted
 ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
@@ -113,5 +121,43 @@ ggplot(analyzed_CFUs_wo_pick_one, aes(dilution, log_CFUs, color = group_mouse)) 
   geom_path() +
   ggtitle("PL BCG CFUs D-21 Spleen for all dilutions")
 
+```
+
+## Calculate statistical significance with different dataset
+
+We will use a different dataset here that has real statistical significance. The data is from the PL Experiment, D21 post-infection with *Mycobacterium tuberculosis*.
+```{r warning = FALSE}
+# example file for the excel file
+example_file_address <- system.file("extdata", "D21_CFUs.xlsx", package = "bactcountr")
+
+# all of the functions are used to tidy the data, pick one dilution, and then calculate the log CFUs
+analyzed_CFUs <- read_xlsx(example_file_address, sheet = "Raw Counts") %>%
+  tidy_CFU() %>%
+  pick_one_dilution("CFUs", c("group", "organ", "mouse")) %>%
+  filter(organ == "Lung") %>%
+  calculate_cfu(dilution_factor = 5, 
+                resuspend_volume = 0.5,
+                percent = 1/3, "dilution", "CFUs")
+
+# the CFUs can then be plotted
+ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
+  geom_beeswarm(groupOnX = TRUE) +
+  ggtitle("PL Mtb CFUs D21 Lung")
+
+```
+
+Calculate statistical significance with ANOVA and Tukey HSD
+```{r}
+sig <- analyzed_CFUs %>%
+  ungroup() %>%
+  select(group, log_CFUs) %>%
+    mutate(group = as.factor(group)) %>%
+  rstatix::tukey_hsd(log_CFUs ~ group) %>%
+  rstatix::add_xy_position(x = "group")
+
+ggline(x = "group", y = "log_CFUs", color = "group", alpha = 0.5, data = analyzed_CFUs,
+       font.label = list(size = 30, face = "plain")) +
+  stat_pvalue_manual(data = sig, hide.ns = TRUE) +
+  ggtitle("PL Mtb CFUs D21 Lung")
 ```
 
