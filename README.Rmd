@@ -106,6 +106,29 @@ ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
 
 ```
 
+The average of the groups can then be plotted.
+```{r}
+# calculate the average CFUs per group
+avg_data <- analyzed_CFUs %>%
+  ungroup() %>%
+  select(group, log_CFUs) %>%
+  group_by(group) %>%
+  mutate(avg_CFUs = mean(log_CFUs)) %>%
+  select(group, avg_CFUs) %>%
+  unique() %>%
+  rename(log_CFUs = avg_CFUs) %>%
+  ungroup() %>%
+  mutate(group = as.factor(group))
+
+# plot average and individual CFUs
+ggplot(analyzed_CFUs, aes(x = as.factor(group), y = log_CFUs)) +
+  geom_bar(data = avg_data,  stat = "identity", aes(fill =group)) +
+    geom_point(color = "black") +
+  xlab("Group") +
+  ggtitle("PL BCG D-21 Spleen Average CFUS")
+```
+
+
 ## Alternative use without using pick_one_dilution
 
 If you want to see the consistancy of the plating across the dilutions, you can skip the `pick_one_dilution` function and plot the calculated log_CFUs for group/mouse against the dilutions.
