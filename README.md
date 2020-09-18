@@ -7,8 +7,8 @@
 
 <!-- badges: end -->
 
-The goal of the bactcountr package is to provide an automated method for enumerating Colony Forming Units (CFUs)
-based on the dilutions performed during the experiment, and lastly, plot the results.
+The goal of bactcountr is to provide an automated way to calculate CFUs
+based on the dilutions used and to plot the final results.
 
 ## Installation
 
@@ -22,7 +22,7 @@ devtools::install_github("aef1004/bactcountr")
 
 ## Example
 
-This is a basic example which illustrates common issues when working with CFU data:
+This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(bactcountr)
@@ -37,7 +37,7 @@ library(rstatix)
 library(ggpubr)
 ```
 
-In order to execute the first function, `tidy_CFU`, the data must have some
+In order to use the first function `tidy_CFU` the data must have some
 columns:
 
   - some type of naming or grouping convention to separate out the
@@ -61,8 +61,8 @@ head(CFU_data)
 #> 6     3 C     Spleen 0          0                   0          0
 ```
 
-Successful execution of the `tidy_CFU` function converts the data to a tidy format. 
-The naming/grouping columns are left alone, but the dilution and CFU columns
+When the `tidy_CFU` function is used, it puts it into a tidy format. The
+naming/grouping columns are left alone, but the dilution and CFU columns
 are gathered so that each row of the dataframe represents a single
 observation. Any values in the original dataframe that are labeled as
 “TNTC” (Too Numerous To Count) are converted to NA columns as they
@@ -90,7 +90,7 @@ head(CFU_raw_formatted)
 The function `pick_one_dilution` sifts through all of the data for the
 groups and finds the CFU observation for each group/mouse/organ that is
 closest to 25 CFUs (and therefore, most likely the most accurate
-observation----BASED ON WHAT? LOD?). It picks one of the dilution-CFU observations per
+observation). It picks one of the dilution-CFU observations per
 grouping.
 
 ``` r
@@ -109,7 +109,7 @@ head(CFU_one_dilution)
 #> 6     2 C     Spleen        0     0
 ```
 
-The `calculate_cfu` function enumerates the whole CFUs and log CFUs for
+The `calculate_cfu` function calculates the whole CFUs and log CFUs for
 each observation in the data. It takes in experimental parameters such
 as the dilution factor used, the volume (in milliliters) used to
 resuspend the CFU solution, and the percent of the organ used (if organ
@@ -145,7 +145,7 @@ and mouse for the spleen. The results can subsequently be plotted.
 example_file_address <- system.file("extdata", "PL_D-21_BCG_CFUs.xlsx", package = "bactcountr")
 
 # all of the functions are used to tidy the data, pick one dilution, and then calculate the log CFUs
-analyzed_CFUs <- read_xlsx(example_file_address) %>% 
+analyzed_CFUs <- read_xlsx(example_file_address) %>%
   tidy_CFU() %>%
   pick_one_dilution("CFUs", c("group", "organ", "mouse")) %>%
   filter(organ == "Spleen") %>%
