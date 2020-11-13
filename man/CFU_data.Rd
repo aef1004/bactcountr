@@ -8,7 +8,7 @@
 A data frame with 46 rows and 7 variables:
 \describe{
   \item{group}{group number to which each mouse belongs}
-  \item{mouse}{mouse name}
+  \item{replicate}{replicate number/letter}
   \item{organ}{organ name of each sample}
   \item{dilution_0}{number of CFUs present for the undiluted sample}
   \item{dilution_1}{number of CFUs present for dilution 1}

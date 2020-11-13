@@ -39,7 +39,7 @@ The package has three main functions:
 ## Example of each function
 In order to use the first function `tidy_CFU` the data must have some columns:
 
-- some type of naming or grouping convention to separate out the individual observations such as the columns group, mouse, organ
+- some type of naming or grouping convention to separate out the individual observations such as the columns group, replicate, organ
 - dilution columns that are labeled `dilution_x` where x is the dilution used
 
 ```{r}
@@ -55,9 +55,9 @@ CFU_raw_formatted <- tidy_CFU(CFU_data)
 head(CFU_raw_formatted)
 ```
 
-The function `pick_one_dilution` sifts through all of the data for the groups and finds the CFU observation for each group/mouse/organ that is closest to 25 CFUs (and therefore, most likely the most accurate observation). It picks one of the dilution-CFU observations per grouping. 
+The function `pick_one_dilution` sifts through all of the data for the groups and finds the CFU observation for each group/replicate/organ that is closest to 25 CFUs (and therefore, most likely the most accurate observation). It picks one of the dilution-CFU observations per grouping. 
 ```{r}
-CFU_one_dilution <- pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "mouse"))
+CFU_one_dilution <- pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "replicate"))
 
 head(CFU_one_dilution)
 ```
@@ -73,7 +73,7 @@ head(final_data)
 
 ## Example of full run-through of the data and plotting
 
-This is an example reading in the data from an excel file. The functions are all run through so that the log CFUs are calculated for each group and mouse for the spleen. The results can subsequently be plotted.
+This is an example reading in the data from an excel file. The functions are all run through so that the log CFUs are calculated for each group and replicate for the spleen. The results can subsequently be plotted.
 
 ```{r warning = FALSE}
 # example file for the excel file
@@ -82,7 +82,7 @@ example_file_address <- system.file("extdata", "PL_D-21_BCG_CFUs.xlsx", package 
 # all of the functions are used to tidy the data, pick one dilution, and then calculate the log CFUs
 analyzed_CFUs <- read_xlsx(example_file_address) %>%
   tidy_CFU() %>%
-  pick_one_dilution("CFUs", c("group", "organ", "mouse")) %>%
+  pick_one_dilution("CFUs", c("group", "organ", "replicate")) %>%
   filter(organ == "Spleen") %>%
   calculate_cfu(5, 0.5, .5, "dilution", "CFUs")
 
@@ -95,15 +95,15 @@ ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
 
 ## Alternative use without using pick_one_dilution
 
-If you want to see the consistancy of the plating across the dilutions, you can skip the `pick_one_dilution` function and plot the calculated log_CFUs for group/mouse against the dilutions.
+If you want to see the consistancy of the plating across the dilutions, you can skip the `pick_one_dilution` function and plot the calculated log_CFUs for group/replicate against the dilutions.
 ```{r fig.width = 5, fig.height = 4}
 analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
   tidy_CFU() %>%
   filter(organ == "Spleen") %>%
   calculate_cfu(5, 0.5, .5, "dilution", "CFUs") %>%
-  unite(col = group_mouse, group, mouse, sep = "_")
+  unite(col = group_replicate, group, replicate, sep = "_")
 
-ggplot(analyzed_CFUs_wo_pick_one, aes(dilution, log_CFUs, color = group_mouse)) +
+ggplot(analyzed_CFUs_wo_pick_one, aes(dilution, log_CFUs, color = group_replicate)) +
   geom_point() +
   geom_path() +
   ggtitle("PL BCG CFUs D-21 Spleen for all dilutions")

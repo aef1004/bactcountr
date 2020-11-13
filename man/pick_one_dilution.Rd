@@ -20,6 +20,6 @@ df
 Pick one dilution to perform CFU calculations on
 }
 \examples{
-pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "mouse"))
+pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "replicate"))
 
 }

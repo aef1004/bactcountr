@@ -7,7 +7,7 @@
 #' @return df
 #' @export
 #'
-#' @examples pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "mouse"))
+#' @examples pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "replicate"))
 #'
 #' @importFrom dplyr %>%
 #' @importFrom rlang .data

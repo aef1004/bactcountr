@@ -12,7 +12,7 @@ test_that("Input dataframe must contain numeric `dilution` and `CFUs` columns", 
 
 test_that("Output dataframe", {
 
-  one_dilution_data <- pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "mouse"))
+  one_dilution_data <- pick_one_dilution(CFU_raw_formatted, "CFUs", c("group", "organ", "replicate"))
 
   expect_is(one_dilution_data, "data.frame")
   expect_is(one_dilution_data$CFUs, "numeric")

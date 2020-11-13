@@ -6,7 +6,7 @@
 #' @format A data frame with 46 rows and 7 variables:
 #' \describe{
 #'   \item{group}{group number to which each mouse belongs}
-#'   \item{mouse}{mouse name}
+#'   \item{replicate}{replicate number/letter}
 #'   \item{organ}{organ name of each sample}
 #'   \item{dilution_0}{number of CFUs present for the undiluted sample}
 #'   \item{dilution_1}{number of CFUs present for dilution 1}
@@ -14,7 +14,7 @@
 #'   \item{dilution_3}{number of CFUs present for dilution 3}
 #'   ...
 #' }
-"CFU_data "
+"CFU_data"
 
 
 #' CFU data formatted after using tidy_cfu
@@ -25,7 +25,7 @@
 #' @format A data frame with 181 rows and 5 variables:
 #' \describe{
 #'   \item{group}{group number to which each mouse belongs}
-#'   \item{mouse}{mouse name}
+#'   \item{replicate}{replicate number/letter}
 #'   \item{organ}{organ name of each sample}
 #'   \item{dilution}{the dilution at which each CFU count is counted}
 #'   \item{CFUs}{number of CFUs present for each of the corresponding dilutions}
@@ -43,7 +43,7 @@
 #' @format A data frame with 46 rows and 5 variables:
 #' \describe{
 #'   \item{group}{group number to which each mouse belongs}
-#'   \item{mouse}{mouse name}
+#'   \item{replicate}{replicate number/letter}
 #'   \item{organ}{organ name of each sample}
 #'   \item{dilution}{the dilution at which each CFU count is counted}
 #'   \item{CFUs}{number of CFUs present for each of the corresponding dilutions}
