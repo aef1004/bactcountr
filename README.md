@@ -117,6 +117,7 @@ is used, default is 1 so whole organ).
 final_data <- calculate_cfu(CFU_one_dilution, 
                             dilution_factor = 5, 
                             resuspend_volume_ml = 0.5, 
+                            volume_plated_uL = 100, 
                             percent = 0.5, "dilution", "CFUs")
 
 head(final_data)
@@ -149,6 +150,7 @@ analyzed_CFUs <- read_xlsx(example_file_address) %>%
   filter(organ == "Spleen") %>%
   calculate_cfu(dilution_factor = 5,
                 resuspend_volume_ml = 0.5,
+                volume_plated_uL = 100,
                 percent = .5, "dilution", "CFUs")
 
 # the CFUs can then be plotted
@@ -194,7 +196,7 @@ log\_CFUs for group/replicate against the dilutions.
 analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
   tidy_CFU() %>%
   filter(organ == "Spleen") %>%
-  calculate_cfu(5, 0.5, .5, "dilution", "CFUs") %>%
+  calculate_cfu(5, 0.5, 100, .5, "dilution", "CFUs") %>%
   unite(col = group_replicate, group, replicate, sep = "_")
 #> Warning: Problem with `mutate()` input `CFUs`.
 #> ℹ NAs introduced by coercion
@@ -226,6 +228,7 @@ analyzed_CFUs <- read_xlsx(example_file_address, sheet = "Raw Counts") %>%
   filter(organ == "Lung") %>%
   calculate_cfu(dilution_factor = 5, 
                 resuspend_volume = 0.5,
+                volume_plated_uL = 100,
                 percent = 1/3, "dilution", "CFUs")
 
 # the CFUs can then be plotted
