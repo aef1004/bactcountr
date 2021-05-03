@@ -1,4 +1,4 @@
-#' Clean CFU data and selects all columns that start with dilution
+#' Clean CFU data and selects all columns that start with dilution - it also removes counts >150 because they are not as accurate
 #'
 #' @param df dataframe that contains all of the raw CFU data with the dilutions
 #'
@@ -21,5 +21,6 @@ tidy_CFU <- function(df) {
            dilution = as.numeric(dilution),
            CFUs = stringr::str_replace(!! rlang::sym(CFU_column), "TNTC", "NA"),
            CFUs = as.numeric(!! rlang::sym(CFU_column))) %>%
+    dplyr::filter(CFUs < 150) %>%
     stats::na.omit()
 }
