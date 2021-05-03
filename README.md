@@ -72,7 +72,6 @@ CFU_raw_formatted <- tidy_CFU(CFU_data)
 #> Warning: Problem with `mutate()` input `CFUs`.
 #> ℹ NAs introduced by coercion
 #> ℹ Input `CFUs` is `as.numeric(CFUs)`.
-#> Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
 head(CFU_raw_formatted)
 #> # A tibble: 6 x 5
 #>   group replicate organ  dilution  CFUs
@@ -83,6 +82,26 @@ head(CFU_raw_formatted)
 #> 4     3 C         Spleen        0     0
 #> 5     4 A         Spleen        0     0
 #> 6     4 B         Spleen        0     0
+
+CFU_raw_formatted %>%
+  calculate_cfu(dilution_factor = 5, 
+                            resuspend_volume_ml = 0.5, 
+                            volume_plated_uL = 100, 
+                            percent = 0.5, "dilution", "CFUs")
+#> # A tibble: 181 x 8
+#>    group replicate organ  dilution  CFUs calculated_CFU whole_CFUs log_CFUs
+#>    <dbl> <chr>     <chr>     <dbl> <dbl>          <dbl>      <dbl>    <dbl>
+#>  1     2 A         Spleen        0    26            130        260     2.41
+#>  2     2 C         Spleen        0     0              0          0     0   
+#>  3     3 A         Spleen        0     0              0          0     0   
+#>  4     3 C         Spleen        0     0              0          0     0   
+#>  5     4 A         Spleen        0     0              0          0     0   
+#>  6     4 B         Spleen        0     0              0          0     0   
+#>  7     4 C         Spleen        0     0              0          0     0   
+#>  8     5 A         Spleen        0     0              0          0     0   
+#>  9     5 B         Spleen        0     0              0          0     0   
+#> 10     5 C         Spleen        0     0              0          0     0   
+#> # … with 171 more rows
 ```
 
 The function `pick_one_dilution` sifts through all of the data for the
@@ -201,7 +220,6 @@ analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
 #> Warning: Problem with `mutate()` input `CFUs`.
 #> ℹ NAs introduced by coercion
 #> ℹ Input `CFUs` is `as.numeric(CFUs)`.
-#> Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
 
 ggplot(analyzed_CFUs_wo_pick_one, aes(dilution, log_CFUs, color = group_replicate)) +
   geom_point() +
@@ -229,7 +247,8 @@ analyzed_CFUs <- read_xlsx(example_file_address, sheet = "Raw Counts") %>%
   calculate_cfu(dilution_factor = 5, 
                 resuspend_volume = 0.5,
                 volume_plated_uL = 100,
-                percent = 1/3, "dilution", "CFUs")
+                percent = 1/3, "dilution", "CFUs") %>%
+  mutate(group = as.factor(group))
 
 # the CFUs can then be plotted
 ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
@@ -242,17 +261,141 @@ ggplot(analyzed_CFUs, aes(group, log_CFUs, color = group)) +
 Calculate statistical significance with ANOVA and Tukey HSD
 
 ``` r
-sig <- analyzed_CFUs %>%
+# calculate ANOVA and tukey HSD stat signif
+sig2 <- analyzed_CFUs %>%
   ungroup() %>%
   select(group, log_CFUs) %>%
-    mutate(group = as.factor(group)) %>%
-  rstatix::tukey_hsd(log_CFUs ~ group) %>%
-  rstatix::add_xy_position(x = "group")
+  aov(log_CFUs ~ group, data = .) %>%
+  TukeyHSD() %>%
+  broom::tidy() %>%
+  separate(col = "contrast", c("group1", "group2"), sep = "-") %>%
+  filter(adj.p.value < 0.05) %>%
+  mutate(adj.p.value   = round(adj.p.value, 3)) 
 
-ggline(x = "group", y = "log_CFUs", color = "group", alpha = 0.5, data = analyzed_CFUs,
-       font.label = list(size = 30, face = "plain")) +
-  stat_pvalue_manual(data = sig, hide.ns = TRUE) +
+# calculates where the p-value bar will first show on the plots
+ypos <- c(max(max(abs(sig2$conf.low)), max(abs(sig2$conf.high))))
+
+# plot the results
+ggscatter(x = "group", y = "log_CFUs", color = "group", data = analyzed_CFUs) +
+  stat_pvalue_manual(data = sig2, label = "adj.p.value", 
+                     hide.ns = TRUE, y.position = ypos, step.increase = 0.1) +
   ggtitle("PL Mtb CFUs D21 Lung")
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+
+Test different statistical analyses
+
+``` r
+# one-tailed t.test - have to choose a mu value
+# have to choose "greater or "less" and a "mu"
+t_sig <-analyzed_CFUs %>%
+  ungroup() %>%
+  t_test(log_CFUs ~ group, mu = 2) %>% #   adjust_pvalue(method = "BH") %>%
+  add_significance() %>%
+  rstatix::add_xy_position(x = "group")
+  
+  
+ggline(x = "group", y = "log_CFUs", color = "group", alpha = 0.5, 
+       data = analyzed_CFUs,
+       font.label = list(size = 30, face = "plain")) +
+      stat_pvalue_manual(data = t_sig, hide.ns = TRUE) +
+    ggtitle(paste("T-test"))
+```
+
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+
+``` r
+
+# two way anova - can choose additional factors that play a role
+```
+
+Different plots
+
+``` r
+# line with mean_se
+ggline(x = "group", y = "log_CFUs", color = "group", alpha = 0.5, data = analyzed_CFUs,
+       font.label = list(size = 30, face = "plain"), add = c("mean_se")) +
+  stat_pvalue_manual(data = sig2, label = "adj.p.value", 
+                     hide.ns = TRUE, y.position = ypos, step.increase = 0.1) +
+  ggtitle("PL Mtb CFUs D21 Lung")
+#> geom_path: Each group consists of only one observation. Do you need to adjust
+#> the group aesthetic?
+```
+
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+
+``` r
+
+# bar plot
+ggbarplot(x = "group", y = "log_CFUs", fill = "group", data = analyzed_CFUs,
+       font.label = list(size = 30, face = "plain"), add = c("mean_se")) +
+  stat_pvalue_manual(data = sig2, label = "adj.p.value", 
+                     hide.ns = TRUE, y.position = ypos, step.increase = 0.1) +
+  ggtitle("PL Mtb CFUs D21 Lung")
+```
+
+<img src="man/figures/README-unnamed-chunk-13-2.png" width="100%" />
+
+``` r
+  
+analyzed_CFUs <- analyzed_CFUs %>%
+  mutate(group = as.factor(group))
+
+# scatter plot
+ggscatter(x = "group", y = "log_CFUs", color = "group", data = analyzed_CFUs) +
+  stat_pvalue_manual(data = sig2, label = "adj.p.value", 
+                     hide.ns = TRUE, y.position = ypos, step.increase = 0.1) +
+  ggtitle("PL Mtb CFUs D21 Lung")
+```
+
+<img src="man/figures/README-unnamed-chunk-13-3.png" width="100%" />
+
+## Alternative use calculating average of all CFUs
+
+If you want to see the consistancy of the plating across the dilutions,
+you can skip the `pick_one_dilution` function and calcuate the average
+CFUs for each group/replicate. Typically this is done by only
+calculating CFUs for which there is a count (removing CFU rows that are
+either TNTC or 0).
+
+**Note: The way that I’m doing this now doesn’t account for the fact
+that if a group/replicate has 0 CFUs across the dataset, it will just be
+removed since I’m filtering CFUs \!= 0**
+
+``` r
+analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
+  tidy_CFU() %>%
+  filter(organ == "Spleen") %>%
+  calculate_cfu(5, 0.5, 100, .5, "dilution", "CFUs") %>%
+  filter(CFUs != 0) %>%
+  group_by(group, replicate) %>%
+  mutate(average_log_CFUs = mean(log_CFUs)) 
+#> Warning: Problem with `mutate()` input `CFUs`.
+#> ℹ NAs introduced by coercion
+#> ℹ Input `CFUs` is `as.numeric(CFUs)`.
+```
+
+Group Names
+
+``` r
+group <- c(1:10)
+route <- c(rep("I.P.", 5), rep("Oral", 5))
+drug <- c(rep(c("control", "control", "Drug 1", "Drug 2", "Drug 1 + Drug 2"), 2))
+
+vaccination <- c(rep(c("PBS", rep("BCG", 4)), 2))
+
+group_df <- data.frame(group, route, drug, vaccination)
+group_df
+#>    group route            drug vaccination
+#> 1      1  I.P.         control         PBS
+#> 2      2  I.P.         control         BCG
+#> 3      3  I.P.          Drug 1         BCG
+#> 4      4  I.P.          Drug 2         BCG
+#> 5      5  I.P. Drug 1 + Drug 2         BCG
+#> 6      6  Oral         control         PBS
+#> 7      7  Oral         control         BCG
+#> 8      8  Oral          Drug 1         BCG
+#> 9      9  Oral          Drug 2         BCG
+#> 10    10  Oral Drug 1 + Drug 2         BCG
+```
