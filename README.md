@@ -65,13 +65,13 @@ naming/grouping columns are left alone, but the dilution and CFU columns
 are gathered so that each row of the dataframe represents a single
 observation. Any values in the original dataframe that are labeled as
 “TNTC” (Too Numerous To Count) are converted to NA columns as they
-cannot be used to calculate the CFUs.
+cannot be used to calculate the CFUs. The CFUs are then filtered to
+those less than 150 as counts above this number are generally not
+accurate.
 
 ``` r
 CFU_raw_formatted <- tidy_CFU(CFU_data)
-#> Warning: Problem with `mutate()` input `CFUs`.
-#> ℹ NAs introduced by coercion
-#> ℹ Input `CFUs` is `as.numeric(CFUs)`.
+#> Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
 head(CFU_raw_formatted)
 #> # A tibble: 6 x 5
 #>   group replicate organ  dilution  CFUs
@@ -217,9 +217,7 @@ analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
   filter(organ == "Spleen") %>%
   calculate_cfu(5, 0.5, 100, .5, "dilution", "CFUs") %>%
   unite(col = group_replicate, group, replicate, sep = "_")
-#> Warning: Problem with `mutate()` input `CFUs`.
-#> ℹ NAs introduced by coercion
-#> ℹ Input `CFUs` is `as.numeric(CFUs)`.
+#> Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
 
 ggplot(analyzed_CFUs_wo_pick_one, aes(dilution, log_CFUs, color = group_replicate)) +
   geom_point() +
@@ -371,9 +369,7 @@ analyzed_CFUs_wo_pick_one <- read_xlsx(example_file_address) %>%
   filter(CFUs != 0) %>%
   group_by(group, replicate) %>%
   mutate(average_log_CFUs = mean(log_CFUs)) 
-#> Warning: Problem with `mutate()` input `CFUs`.
-#> ℹ NAs introduced by coercion
-#> ℹ Input `CFUs` is `as.numeric(CFUs)`.
+#> Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
 ```
 
 Group Names

@@ -54,7 +54,7 @@ data("CFU_data")
 head(CFU_data)
 ```
 
-When the `tidy_CFU` function is used, it puts it into a tidy format. The naming/grouping columns are left alone, but the dilution and CFU columns are gathered so that each row of the dataframe represents a single observation. Any values in the original dataframe that are labeled as "TNTC" (Too Numerous To Count) are converted to NA columns as they cannot be used to calculate the CFUs.
+When the `tidy_CFU` function is used, it puts it into a tidy format. The naming/grouping columns are left alone, but the dilution and CFU columns are gathered so that each row of the dataframe represents a single observation. Any values in the original dataframe that are labeled as "TNTC" (Too Numerous To Count) are converted to NA columns as they cannot be used to calculate the CFUs. The CFUs are then filtered to those less than 150 as counts above this number are generally not accurate.
 
 ```{r}
 CFU_raw_formatted <- tidy_CFU(CFU_data)
